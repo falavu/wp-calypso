@@ -94,7 +94,8 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 					onConnect={ this.handleConnect }
 				>
 					{ translate( 'Connect to Google My Business', {
-						comment: 'Call to Action to add a business listing to Google My Business',
+						comment:
+							'Call to Action to connect the site to a business listing in Google My Business',
 					} ) }
 				</KeyringConnectButton>
 			);
