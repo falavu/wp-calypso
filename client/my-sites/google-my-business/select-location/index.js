@@ -20,6 +20,7 @@ import { getSelectedSiteSlug, getSelectedSiteId } from 'state/ui/selectors';
 import GoogleMyBusinessLocation from 'my-sites/google-my-business/location';
 import GoogleMyBusinessSelectLocationButton from './button';
 import HeaderCake from 'components/header-cake';
+import KeyringConnectButton from 'blocks/keyring-connect-button';
 import Main from 'components/main';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
 import { recordTracksEvent } from 'state/analytics/actions';
@@ -89,6 +90,11 @@ class GoogleMyBusinessSelectLocation extends Component {
 						/>
 					</GoogleMyBusinessLocation>
 				) ) }
+				<CompactCard>
+					<KeyringConnectButton serviceId="google_my_business" forceReconnect={ true }>
+						{ translate( 'Add additional Google My Business Locations' ) }
+					</KeyringConnectButton>
+				</CompactCard>
 
 				<Card className="gmb-select-location__add">
 					{ translate(

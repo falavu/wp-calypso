@@ -82,23 +82,38 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 	};
 
 	renderLocalBusinessCard() {
-		const { canUserManageOptions, translate } = this.props;
+		const { canUserManageOptions, googleMyBusinessLocations, siteSlug, translate } = this.props;
 
 		let connectButton;
 
 		if ( config.isEnabled( 'google-my-business' ) && canUserManageOptions ) {
-			connectButton = (
-				<KeyringConnectButton
-					serviceId="google_my_business"
-					onClick={ this.trackCreateYourListingClick }
-					onConnect={ this.handleConnect }
-				>
-					{ translate( 'Connect to Google My Business', {
-						comment:
-							'Call to Action to connect the site to a business listing in Google My Business',
-					} ) }
-				</KeyringConnectButton>
-			);
+			if ( googleMyBusinessLocations.length > 0 ) {
+				connectButton = (
+					<Button
+						primary
+						href={ `/google-my-business/select-location/${ siteSlug }` }
+						onClick={ this.trackCreateYourListingClick }
+					>
+						{ translate( 'Choose Google My Business Location', {
+							comment:
+								'Call to Action to choose from exisitng connected Google My Business business listings',
+						} ) }
+					</Button>
+				);
+			} else {
+				connectButton = (
+					<KeyringConnectButton
+						serviceId="google_my_business"
+						onClick={ this.trackCreateYourListingClick }
+						onConnect={ this.handleConnect }
+					>
+						{ translate( 'Connect to Google My Business Location', {
+							comment:
+								'Call to Action to connect the site to a business listing in Google My Business',
+						} ) }
+					</KeyringConnectButton>
+				);
+			}
 		} else {
 			connectButton = (
 				<Button
