@@ -5,6 +5,7 @@
  */
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
+import { get } from 'lodash';
 import page from 'page';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -55,6 +56,26 @@ class GoogleMyBusinessSelectLocation extends Component {
 		);
 	};
 
+	handleConnect = () => {
+		const { googleMyBusinessLocations } = this.props;
+
+		const locationCount = googleMyBusinessLocations.length;
+		const verifiedLocationCount = googleMyBusinessLocations.filter( location => {
+			return get( location, 'meta.state.isVerified', false );
+		} ).length;
+
+		this.props.recordTracksEvent( 'calypso_google_my_business_select_business_type_connect', {
+			location_count: locationCount,
+			verified_location_count: verifiedLocationCount,
+		} );
+	};
+
+	trackAddListingClick = () => {
+		this.props.recordTracksEvent(
+			'calypso_google_my_business_location_add_additional_location_button_click'
+		);
+	};
+
 	componentDidMount() {
 		this.props.requestKeyringConnections( true );
 	}
@@ -91,7 +112,12 @@ class GoogleMyBusinessSelectLocation extends Component {
 					</GoogleMyBusinessLocation>
 				) ) }
 				<CompactCard>
-					<KeyringConnectButton serviceId="google_my_business" forceReconnect={ true }>
+					<KeyringConnectButton
+						serviceId="google_my_business"
+						forceReconnect={ true }
+						onClick={ this.trackAddListingClick }
+						onConnect={ this.handleConnect }
+					>
 						{ translate( 'Add additional Google My Business Locations' ) }
 					</KeyringConnectButton>
 				</CompactCard>
