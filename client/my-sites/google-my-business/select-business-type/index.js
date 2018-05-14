@@ -93,7 +93,7 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 					onClick={ this.trackCreateYourListingClick }
 					onConnect={ this.handleConnect }
 				>
-					{ translate( 'Create Your Listing', {
+					{ translate( 'Connect to Google My Business', {
 						comment: 'Call to Action to add a business listing to Google My Business',
 					} ) }
 				</KeyringConnectButton>
