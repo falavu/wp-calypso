@@ -3,11 +3,12 @@
 /**
  * External dependencies
  */
-import { connect } from 'react-redux';
-import { localize } from 'i18n-calypso';
-import page from 'page';
+import Gridicon from 'gridicons';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import page from 'page';
+import { connect } from 'react-redux';
+import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -15,10 +16,10 @@ import React, { Component } from 'react';
 import Button from 'components/button';
 import Card from 'components/card';
 import DocumentHead from 'components/data/document-head';
-import { getSelectedSiteSlug } from 'state/ui/selectors';
 import HeaderCake from 'components/header-cake';
 import Main from 'components/main';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
+import { getSelectedSiteSlug } from 'state/ui/selectors';
 import { recordTracksEvent } from 'state/analytics/actions';
 
 class GoogleMyBusinessNewAccount extends Component {
@@ -76,11 +77,12 @@ class GoogleMyBusinessNewAccount extends Component {
 
 						<div className="gmb-new-account__actions">
 							<Button
-								href={ `/google-my-business/select-location/${ siteSlug }` }
+								href={ 'https://business.google.com/create' }
+								target="_blank"
 								onClick={ this.trackCreateMyListingClick }
 								primary
 							>
-								{ translate( 'Create Your Listing' ) }
+								{ translate( 'Create Your Listing' ) } <Gridicon icon="external" />
 							</Button>
 
 							<Button href={ `/stats/${ siteSlug }` } onClick={ this.trackNoThanksClick }>
