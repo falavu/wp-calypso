@@ -3,7 +3,7 @@
 /**
  * External dependencies
  */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { isEqual, noop, some } from 'lodash';
@@ -188,7 +188,7 @@ class KeyringConnectButton extends Component {
 		}
 
 		return (
-			<div>
+			<Fragment>
 				<QueryKeyringServices />
 				<Button
 					primary={ primary }
@@ -198,7 +198,7 @@ class KeyringConnectButton extends Component {
 				>
 					{ label }
 				</Button>
-			</div>
+			</Fragment>
 		);
 	}
 }
