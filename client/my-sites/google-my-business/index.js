@@ -114,7 +114,7 @@ export default function( router ) {
 			const siteId = getSelectedSiteId( state );
 			const hasConnectedLocation = isGoogleMyBusinessLocationConnected( state, siteId );
 			const hasAuthenticated =
-				getKeyringConnectionsByName( state, 'google-my-business' ).length > 0;
+				getKeyringConnectionsByName( state, 'google_my_business' ).length > 0;
 
 			if ( ! config.isEnabled( 'google-my-business' ) ) {
 				page.redirect( `/google-my-business/select-business-type/${ context.params.site }` );
