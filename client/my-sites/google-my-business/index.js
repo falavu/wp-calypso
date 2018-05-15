@@ -19,6 +19,7 @@ import {
 	getGoogleMyBusinessLocations,
 	isSiteGoogleMyBusinessEligible,
 } from 'state/selectors';
+import { canCurrentUser } from 'state/selectors';
 import { requestSiteSettings } from 'state/site-settings/actions';
 import { requestKeyringConnections } from 'state/sharing/keyring/actions';
 
@@ -31,6 +32,18 @@ const loadKeyringAndSiteSettingsMiddleware = ( context, next ) => {
 	] ).then( next );
 };
 
+const redirectUnauthorized = ( context, next ) => {
+	const state = context.store.getState();
+	const siteId = getSelectedSiteId( state );
+	const siteIsGMBEligible = isSiteGoogleMyBusinessEligible( state, siteId );
+	const canUserManageOptions = canCurrentUser( state, siteId, 'manage_options' );
+	if ( ! siteIsGMBEligible || ! canUserManageOptions ) {
+		context.redirect( `/stats/${ context.params.site }` );
+	}
+
+	next();
+};
+
 export default function( router ) {
 	router( '/google-my-business', siteSelection, sites, navigation, makeLayout );
 
@@ -41,6 +54,7 @@ export default function( router ) {
 			'/google-my-business/new/:site',
 			redirectLoggedOut,
 			siteSelection,
+			redirectUnauthorized,
 			newAccount,
 			navigation,
 			makeLayout
@@ -58,6 +72,7 @@ export default function( router ) {
 			'/google-my-business/select-location/:site',
 			redirectLoggedOut,
 			siteSelection,
+			redirectUnauthorized,
 			selectLocation,
 			navigation,
 			makeLayout
@@ -69,6 +84,7 @@ export default function( router ) {
 			'/google-my-business/stats/:site',
 			redirectLoggedOut,
 			siteSelection,
+			redirectUnauthorized,
 			loadKeyringAndSiteSettingsMiddleware,
 			( context, next ) => {
 				const state = context.store.getState();
@@ -100,6 +116,7 @@ export default function( router ) {
 		'/google-my-business/select-business-type/:site',
 		redirectLoggedOut,
 		siteSelection,
+		redirectUnauthorized,
 		selectBusinessType,
 		navigation,
 		makeLayout
@@ -108,6 +125,7 @@ export default function( router ) {
 	router(
 		'/google-my-business/:site',
 		siteSelection,
+		redirectUnauthorized,
 		loadKeyringAndSiteSettingsMiddleware,
 		context => {
 			const state = context.store.getState();

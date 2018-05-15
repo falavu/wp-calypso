@@ -1,6 +1,11 @@
 /** @format */
 
 /**
+ * External dependencies
+ */
+import { get } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import {
@@ -30,7 +35,14 @@ export default function isGoogleMyBusinessStatsNudgeVisible( state, siteId ) {
 		return false;
 	}
 
-	if ( isGoogleMyBusinessLocationConnected( state, siteId ) ) {
+	// Don't show the nudge if the site is already connected (can be from another admin)
+	const googleMyBusinessKeyringId = get(
+		state,
+		`siteSettings.items.${ siteId }.google_my_business_keyring_id`,
+		null
+	);
+
+	if ( googleMyBusinessKeyringId ) {
 		return false;
 	}
 
