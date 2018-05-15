@@ -64,7 +64,7 @@ class GoogleMyBusinessSelectLocation extends Component {
 			return get( location, 'meta.state.isVerified', false );
 		} ).length;
 
-		this.props.recordTracksEvent( 'calypso_google_my_business_select_business_type_connect', {
+		this.props.recordTracksEvent( 'calypso_google_my_business_select_location_connect', {
 			location_count: locationCount,
 			verified_location_count: verifiedLocationCount,
 		} );

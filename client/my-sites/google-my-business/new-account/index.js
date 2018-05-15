@@ -9,6 +9,7 @@ import React, { Component } from 'react';
 import page from 'page';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
+import { get } from 'lodash';
 
 /**
  * Internal dependencies
@@ -19,14 +20,17 @@ import DocumentHead from 'components/data/document-head';
 import HeaderCake from 'components/header-cake';
 import Main from 'components/main';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
-import { getSelectedSiteSlug } from 'state/ui/selectors';
+import KeyringConnectButton from 'blocks/keyring-connect-button';
+import { getSelectedSiteSlug, getSelectedSiteId } from 'state/ui/selectors';
 import { recordTracksEvent } from 'state/analytics/actions';
+import { getGoogleMyBusinessLocations } from 'state/selectors';
 
 class GoogleMyBusinessNewAccount extends Component {
 	static propTypes = {
 		recordTracksEvent: PropTypes.func.isRequired,
 		siteSlug: PropTypes.string,
 		translate: PropTypes.func.isRequired,
+		locations: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	};
 
 	goBack = () => {
@@ -37,6 +41,22 @@ class GoogleMyBusinessNewAccount extends Component {
 		this.props.recordTracksEvent(
 			'calypso_google_my_business_new_account_create_my_listing_button_click'
 		);
+	};
+
+	handleConnect = () => {
+		const { locations } = this.props;
+
+		const locationCount = locations.length;
+		const verifiedLocationCount = locations.filter( location =>
+			get( location, 'meta.state.isVerified', false )
+		).length;
+
+		this.props.recordTracksEvent( 'calypso_google_my_business_new_connect', {
+			location_count: locationCount,
+			verified_location_count: verifiedLocationCount,
+		} );
+
+		page.redirect( `/google-my-business/${ this.props.siteSlug }` );
 	};
 
 	trackNoThanksClick = () => {
@@ -85,6 +105,15 @@ class GoogleMyBusinessNewAccount extends Component {
 								{ translate( 'Create Your Listing' ) } <Gridicon icon="external" />
 							</Button>
 
+							<KeyringConnectButton
+								serviceId="google_my_business"
+								forceReconnect={ true }
+								onClick={ this.trackAddListingClick }
+								onConnect={ this.handleConnect }
+							>
+								{ translate( 'Add additional Google My Business account' ) }
+							</KeyringConnectButton>
+
 							<Button href={ `/stats/${ siteSlug }` } onClick={ this.trackNoThanksClick }>
 								{ translate( 'No thanks' ) }
 							</Button>
@@ -99,6 +128,7 @@ class GoogleMyBusinessNewAccount extends Component {
 export default connect(
 	state => ( {
 		siteSlug: getSelectedSiteSlug( state ),
+		locations: getGoogleMyBusinessLocations( state, getSelectedSiteId( state ) ),
 	} ),
 	{
 		recordTracksEvent,
