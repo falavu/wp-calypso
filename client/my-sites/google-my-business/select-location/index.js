@@ -57,10 +57,10 @@ class GoogleMyBusinessSelectLocation extends Component {
 	};
 
 	handleConnect = () => {
-		const { googleMyBusinessLocations } = this.props;
+		const { locations } = this.props;
 
-		const locationCount = googleMyBusinessLocations.length;
-		const verifiedLocationCount = googleMyBusinessLocations.filter( location => {
+		const locationCount = locations.length;
+		const verifiedLocationCount = locations.filter( location => {
 			return get( location, 'meta.state.isVerified', false );
 		} ).length;
 
@@ -118,7 +118,7 @@ class GoogleMyBusinessSelectLocation extends Component {
 						onClick={ this.trackAddListingClick }
 						onConnect={ this.handleConnect }
 					>
-						{ translate( 'Add additional Google My Business Locations' ) }
+						{ translate( 'Add additional Google My Business locations' ) }
 					</KeyringConnectButton>
 				</CompactCard>
 

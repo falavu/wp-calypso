@@ -33,10 +33,22 @@ import QueryKeyringConnections from 'components/data/query-keyring-connections';
 
 class GoogleMyBusinessSelectBusinessType extends Component {
 	static propTypes = {
+		googleMyBusinessLocations: PropTypes.array.isRequired,
 		recordTracksEvent: PropTypes.func.isRequired,
 		siteId: PropTypes.number,
 		siteSlug: PropTypes.string,
 		translate: PropTypes.func.isRequired,
+	};
+
+	static getDerivedStateFromProps( nextProps, prevState ) {
+		return {
+			previousLocations: nextProps.googleMyBusinessLocations,
+			locationsChanged: nextProps.googleMyBusinessLocations !== prevState.previousLocations,
+		};
+	}
+
+	state = {
+		previousLocations: [],
 	};
 
 	goBack = () => {
@@ -83,11 +95,12 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 
 	renderLocalBusinessCard() {
 		const { canUserManageOptions, googleMyBusinessLocations, siteSlug, translate } = this.props;
+		const { locationsChanged } = this.state;
 
 		let connectButton;
 
 		if ( config.isEnabled( 'google-my-business' ) && canUserManageOptions ) {
-			if ( googleMyBusinessLocations.length > 0 ) {
+			if ( googleMyBusinessLocations.length > 0 && ! locationsChanged ) {
 				connectButton = (
 					<Button
 						primary
