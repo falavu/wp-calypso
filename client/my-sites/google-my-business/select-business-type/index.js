@@ -27,15 +27,18 @@ import KeyringConnectButton from 'blocks/keyring-connect-button';
 import Main from 'components/main';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
 import { canCurrentUser, getGoogleMyBusinessLocations } from 'state/selectors';
+import { isJetpackSite } from 'state/sites/selectors';
 import { recordTracksEvent } from 'state/analytics/actions';
 import QuerySiteSettings from 'components/data/query-site-settings';
 import QueryKeyringConnections from 'components/data/query-keyring-connections';
+
 
 class GoogleMyBusinessSelectBusinessType extends Component {
 	static propTypes = {
 		googleMyBusinessLocations: PropTypes.array.isRequired,
 		recordTracksEvent: PropTypes.func.isRequired,
 		siteId: PropTypes.number,
+		siteIsJetpack: PropTypes.bool.isRequired,
 		siteSlug: PropTypes.string,
 		translate: PropTypes.func.isRequired,
 	};
@@ -107,9 +110,9 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 						href={ `/google-my-business/select-location/${ siteSlug }` }
 						onClick={ this.trackCreateYourListingClick }
 					>
-						{ translate( 'Choose Google My Business Location', {
+						{ translate( 'Select Google My Business Location', {
 							comment:
-								'Call to Action to choose from exisitng connected Google My Business business listings',
+								'Call to Action to choose from existing connected Google My Business business listings',
 						} ) }
 					</Button>
 				);
@@ -120,7 +123,7 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 						onClick={ this.trackCreateYourListingClick }
 						onConnect={ this.handleConnect }
 					>
-						{ translate( 'Connect to Google My Business Location', {
+						{ translate( 'Connect to Google My Business', {
 							comment:
 								'Call to Action to connect the site to a business listing in Google My Business',
 						} ) }
@@ -135,7 +138,7 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 					target="_blank"
 					onClick={ this.trackCreateYourListingClick }
 				>
-					{ translate( 'Create Your Listing', {
+					{ translate( 'Create Listing', {
 						comment: 'Call to Action to add a business listing to Google My Business',
 					} ) }{' '}
 					<Gridicon icon="external" />
@@ -159,7 +162,11 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 	}
 
 	renderOnlineBusinessCard() {
-		const { siteSlug, translate } = this.props;
+		const { siteIsJetpack, translate } = this.props;
+
+		const seoHelpLink = siteIsJetpack
+			? 'https://jetpack.com/support/seo-tools/'
+			: 'https://en.blog.wordpress.com/2013/03/22/seo-on-wordpress-com/';
 
 		return (
 			<ActionCard
@@ -169,8 +176,10 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 				mainText={ translate(
 					"Don't provide in-person services? Learn more about reaching your customers online."
 				) }
-				buttonText={ translate( 'Optimize Your SEO', { comment: 'Call to Action button' } ) }
-				buttonHref={ `/settings/traffic/${ siteSlug }` }
+				buttonTarget="_blank"
+				buttonText={ translate( 'Learn More about SEO', { comment: 'Call to Action button' } ) }
+				buttonHref={ seoHelpLink }
+				buttonIcon="external"
 				buttonOnClick={ this.trackOptimizeYourSEOClick }
 			/>
 		);
@@ -204,7 +213,7 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 						<p>
 							{ translate(
 								'{{link}}Google My Business{{/link}} lists your local business on Google Search and Google Maps. ' +
-									'It works for businesses that have a physical location or serve a local area.',
+									'It works for businesses that have a physical location, or serve a local area.',
 								{
 									components: {
 										link: (
@@ -240,10 +249,12 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 export default connect(
 	state => {
 		const siteId = getSelectedSiteId( state );
+
 		return {
 			googleMyBusinessLocations: getGoogleMyBusinessLocations( state, siteId ),
 			canUserManageOptions: canCurrentUser( state, siteId, 'manage_options' ),
 			siteId,
+			siteIsJetpack: isJetpackSite( state, siteId ),
 			siteSlug: getSelectedSiteSlug( state ),
 		};
 	},

@@ -91,7 +91,7 @@ class GoogleMyBusinessNewAccount extends Component {
 						<p>
 							{ translate(
 								'Google My Business lists your local business on Google Search and Google Maps. ' +
-									'It works for businesses that have a physical location or serve a local area'
+									'It works for businesses that have a physical location, or serve a local area.'
 							) }
 						</p>
 
@@ -102,7 +102,7 @@ class GoogleMyBusinessNewAccount extends Component {
 								onClick={ this.trackCreateMyListingClick }
 								primary
 							>
-								{ translate( 'Create Your Listing' ) } <Gridicon icon="external" />
+								{ translate( 'Create Listing' ) } <Gridicon icon="external" />
 							</Button>
 
 							<KeyringConnectButton
@@ -111,7 +111,7 @@ class GoogleMyBusinessNewAccount extends Component {
 								onClick={ this.trackAddListingClick }
 								onConnect={ this.handleConnect }
 							>
-								{ translate( 'Add additional Google My Business account' ) }
+								{ translate( 'Use another Google Account' ) }
 							</KeyringConnectButton>
 
 							<Button href={ `/stats/${ siteSlug }` } onClick={ this.trackNoThanksClick }>

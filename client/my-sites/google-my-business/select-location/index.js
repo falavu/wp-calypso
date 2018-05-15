@@ -6,6 +6,7 @@
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import { get } from 'lodash';
+import Gridicon from 'gridicons';
 import page from 'page';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -13,10 +14,10 @@ import React, { Component } from 'react';
 /**
  * Internal dependencies
  */
+import Button from 'components/button';
 import Card from 'components/card';
 import CompactCard from 'components/card/compact';
 import DocumentHead from 'components/data/document-head';
-import ExternalLink from 'components/external-link';
 import { getSelectedSiteSlug, getSelectedSiteId } from 'state/ui/selectors';
 import GoogleMyBusinessLocation from 'my-sites/google-my-business/location';
 import GoogleMyBusinessSelectLocationButton from './button';
@@ -111,39 +112,36 @@ class GoogleMyBusinessSelectLocation extends Component {
 						/>
 					</GoogleMyBusinessLocation>
 				) ) }
-				<CompactCard>
-					<KeyringConnectButton
-						serviceId="google_my_business"
-						forceReconnect={ true }
-						onClick={ this.trackAddListingClick }
-						onConnect={ this.handleConnect }
-					>
-						{ translate( 'Add additional Google My Business locations' ) }
-					</KeyringConnectButton>
-				</CompactCard>
 
-				<Card className="gmb-select-location__add">
-					{ translate(
-						"Don't see the listing you are trying to connect? {{link}}Add your business{{/link}}.",
-						{
-							components: {
-								link: (
-									<ExternalLink
-										href="https://business.google.com/create"
-										target="_blank"
-										rel="noopener noreferrer"
-										icon={ true }
-										onClick={ this.trackAddYourBusinessClick }
-									/>
-								),
-							},
-						}
-					) }
+				<Card className="gmb-select-location__help">
+					<p>
+						{ translate( "Don't see the listing you are trying to connect?" ) }
+					</p>
+
+					<div className="gmb-select-location__help-actions">
+						<Button
+							href={ 'https://business.google.com/create' }
+							target="_blank"
+							onClick={ this.trackAddYourBusinessClick }
+						>
+							{ translate( 'Add your Business' ) } <Gridicon icon="external" />
+						</Button>
+
+						<KeyringConnectButton
+							serviceId="google_my_business"
+							forceReconnect={ true }
+							onClick={ this.trackAddListingClick }
+							onConnect={ this.handleConnect }
+						>
+							{ translate( 'Use another Google Account' ) }
+						</KeyringConnectButton>
+					</div>
 				</Card>
 			</Main>
 		);
 	}
 }
+
 export default connect(
 	state => {
 		const siteId = getSelectedSiteId( state );
