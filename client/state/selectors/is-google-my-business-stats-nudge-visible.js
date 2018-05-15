@@ -8,11 +8,7 @@ import { get } from 'lodash';
 /**
  * Internal dependencies
  */
-import {
-	isGoogleMyBusinessLocationConnected,
-	isSiteGoogleMyBusinessEligible,
-	getSiteOptions,
-} from 'state/selectors';
+import { isSiteGoogleMyBusinessEligible, getSiteOptions } from 'state/selectors';
 import { isRequestingSiteSettings, getSiteSettings } from 'state/site-settings/selectors';
 import versionCompare from 'lib/version-compare';
 import { isJetpackSite } from 'state/sites/selectors';
