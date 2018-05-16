@@ -124,6 +124,8 @@ export default function( router ) {
 
 			if ( hasConnectedLocation ) {
 				page.redirect( `/google-my-business/stats/${ context.params.site }` );
+			} else if ( hasLocationsAvailable ) {
+				page.redirect( `/google-my-business/select-location/${ context.params.site }` );
 			} else if ( hasAuthenticated && ! hasLocationsAvailable ) {
 				page.redirect( `/google-my-business/new/${ context.params.site }` );
 			} else {
