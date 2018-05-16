@@ -39,12 +39,14 @@ class KeyringConnectButton extends Component {
 		onClick: PropTypes.func,
 		onConnect: PropTypes.func,
 		forceReconnect: PropTypes.bool,
+		primary: PropTypes.bool,
 	};
 
 	static defaultProps = {
 		onClick: noop,
 		onConnect: noop,
 		forceReconnect: false,
+		primary: false,
 	};
 
 	state = {
@@ -166,10 +168,10 @@ class KeyringConnectButton extends Component {
 	}
 
 	render() {
-		const { service, translate } = this.props;
+		const { primary, service, translate } = this.props;
 		const { isConnecting, isRefreshing } = this.state;
 		const status = service ? this.getConnectionStatus() : 'unknown';
-		let primary = false,
+		let localPrimary = false,
 			warning = false,
 			label;
 
@@ -184,14 +186,14 @@ class KeyringConnectButton extends Component {
 			label = translate( 'Connecting…' );
 		} else {
 			label = this.props.children;
-			primary = true;
+			localPrimary = primary;
 		}
 
 		return (
 			<Fragment>
 				<QueryKeyringServices />
 				<Button
-					primary={ primary }
+					primary={ localPrimary }
 					scary={ warning }
 					onClick={ this.onClick }
 					disabled={ isPending }

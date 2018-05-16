@@ -32,7 +32,6 @@ import { recordTracksEvent } from 'state/analytics/actions';
 import QuerySiteSettings from 'components/data/query-site-settings';
 import QueryKeyringConnections from 'components/data/query-keyring-connections';
 
-
 class GoogleMyBusinessSelectBusinessType extends Component {
 	static propTypes = {
 		googleMyBusinessLocations: PropTypes.array.isRequired,
@@ -122,6 +121,7 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 						serviceId="google_my_business"
 						onClick={ this.trackCreateYourListingClick }
 						onConnect={ this.handleConnect }
+						primary
 					>
 						{ translate( 'Connect to Google My Business', {
 							comment:
