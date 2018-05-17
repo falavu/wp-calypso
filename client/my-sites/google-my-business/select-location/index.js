@@ -53,7 +53,7 @@ class GoogleMyBusinessSelectLocation extends Component {
 
 	trackAddYourBusinessClick = () => {
 		this.props.recordTracksEvent(
-			'calypso_google_my_business_select_location_add_your_business_link_click'
+			'calypso_google_my_business_select_location_add_your_business_button_click'
 		);
 	};
 
@@ -73,7 +73,7 @@ class GoogleMyBusinessSelectLocation extends Component {
 
 	trackAddListingClick = () => {
 		this.props.recordTracksEvent(
-			'calypso_google_my_business_location_add_additional_location_button_click'
+			'calypso_google_my_business_select_location_use_another_account_button_click'
 		);
 	};
 
@@ -114,9 +114,7 @@ class GoogleMyBusinessSelectLocation extends Component {
 				) ) }
 
 				<Card className="gmb-select-location__help">
-					<p>
-						{ translate( "Don't see the listing you are trying to connect?" ) }
-					</p>
+					<p>{ translate( "Don't see the listing you are trying to connect?" ) }</p>
 
 					<div className="gmb-select-location__help-actions">
 						<Button
