@@ -38,6 +38,12 @@ class GoogleMyBusinessNewAccount extends Component {
 		page.back( `/google-my-business/select-business-type/${ this.props.siteSlug }` );
 	};
 
+	trackUseAnotherAccountButtonClick = () => {
+		this.props.recordTracksEvent(
+			'calypso_google_my_business_new_account_use_another_account_button_click'
+		);
+	};
+
 	trackCreateMyListingClick = () => {
 		this.props.recordTracksEvent(
 			'calypso_google_my_business_new_account_create_my_listing_button_click'
@@ -110,7 +116,7 @@ class GoogleMyBusinessNewAccount extends Component {
 							<KeyringConnectButton
 								serviceId="google_my_business"
 								forceReconnect={ true }
-								onClick={ this.trackAddListingClick }
+								onClick={ this.trackUseAnotherAccountButtonClick }
 								onConnect={ this.handleConnect }
 							>
 								{ translate( 'Use another Google Account' ) }
