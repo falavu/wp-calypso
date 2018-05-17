@@ -9,21 +9,26 @@ import {
 } from 'state/action-types';
 import { saveSiteSettings } from 'state/site-settings/actions';
 
-export const connectGoogleMyBusinessLocation = (
-	siteId,
-	keyringConnectionId,
-	locationId
-) => dispatch => {
+export const associateGoogleMyBusinessAccount = ( siteId, keyringConnectionId ) => dispatch => {
 	return dispatch(
 		saveSiteSettings( siteId, {
 			google_my_business_keyring_id: keyringConnectionId,
+		} )
+	).then( ( { updated } ) => {
+		if ( ! updated.hasOwnProperty( 'google_my_business_keyring_id' ) ) {
+			return Promise.reject();
+		}
+		return Promise.resolve();
+	} );
+};
+
+export const connectGoogleMyBusinessLocation = ( siteId, locationId ) => dispatch => {
+	return dispatch(
+		saveSiteSettings( siteId, {
 			google_my_business_location_id: locationId,
 		} )
 	).then( ( { updated } ) => {
-		if (
-			! updated.hasOwnProperty( 'google_my_business_keyring_id' ) &&
-			! updated.hasOwnProperty( 'google_my_business_location_id' )
-		) {
+		if ( ! updated.hasOwnProperty( 'google_my_business_location_id' ) ) {
 			return Promise.reject();
 		}
 		return Promise.resolve();
@@ -33,14 +38,10 @@ export const connectGoogleMyBusinessLocation = (
 export const disconnectGoogleMyBusinessLocation = siteId => dispatch => {
 	return dispatch(
 		saveSiteSettings( siteId, {
-			google_my_business_keyring_id: false,
 			google_my_business_location_id: false,
 		} )
 	).then( ( { updated } ) => {
-		if (
-			! updated.hasOwnProperty( 'google_my_business_keyring_id' ) &&
-			! updated.hasOwnProperty( 'google_my_business_location_id' )
-		) {
+		if ( ! updated.hasOwnProperty( 'google_my_business_location_id' ) ) {
 			return Promise.reject();
 		}
 		return Promise.resolve();

@@ -6,7 +6,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { isEqual, noop, some } from 'lodash';
+import { difference, noop, some } from 'lodash';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -49,11 +49,54 @@ class KeyringConnectButton extends Component {
 		primary: false,
 	};
 
+	static getDerivedStateFromProps( nextProps, prevState ) {
+		let newConnections = [],
+			isConnecting = prevState.isConnecting,
+			isRefreshing = prevState.isRefreshing,
+			isAwaitingConnections = prevState.isAwaitingConnections;
+
+		if ( prevState.previousConnections !== nextProps.keyringConnections ) {
+			newConnections = difference( nextProps.keyringConnections, prevState.previousConnections );
+			isConnecting = false;
+		}
+
+		if ( prevState.isAwaitingConnections ) {
+			isAwaitingConnections = false;
+			isRefreshing = false;
+
+			const hasAnyConnectionOptions = some(
+				nextProps.keyringConnections,
+				keyringConnection =>
+					keyringConnection.isConnected === false || keyringConnection.isConnected === undefined
+			);
+
+			if ( nextProps.keyringConnections.length === 0 || ! hasAnyConnectionOptions ) {
+				isConnecting = false;
+			}
+
+			if ( nextProps.keyringConnections.length && hasAnyConnectionOptions ) {
+				isConnecting = false;
+				nextProps.onConnect( newConnections );
+			}
+		}
+
+		return {
+			isOpen: prevState.isOpen,
+			isConnecting,
+			isRefreshing,
+			isAwaitingConnections,
+			newConnections,
+			previousConnections: nextProps.keyringConnections,
+		};
+	}
+
 	state = {
 		isOpen: false, // The service is visually opened
 		isConnecting: false, // A pending connection is awaiting authorization
 		isRefreshing: false, // A pending refresh is awaiting completion
 		isAwaitingConnections: false, // Waiting for Keyring Connections request to finish
+		newConnections: [], // connections made by the button
+		previousConnections: this.props.keyringConnections, // used to calculate the `newConenctions` property
 	};
 
 	onClick = () => {
@@ -89,12 +132,13 @@ class KeyringConnectButton extends Component {
 
 	performAction = () => {
 		const { forceReconnect } = this.props;
+		const { newConnections } = this.state;
 		const connectionStatus = this.getConnectionStatus();
 
 		// Depending on current status, perform an action when user clicks the
 		// service action button
 		if ( 'connected' === connectionStatus && ! forceReconnect ) {
-			this.props.onConnect();
+			this.props.onConnect( newConnections );
 		} else {
 			this.addConnection();
 		}
@@ -122,27 +166,27 @@ class KeyringConnectButton extends Component {
 		}
 	};
 
-	componentWillReceiveProps( nextProps ) {
-		if ( ! isEqual( this.props.keyringConnections, nextProps.keyringConnections ) ) {
-			this.setState( {
-				isConnecting: false,
-			} );
-		}
+	// componentWillReceiveProps( nextProps ) {
+	// 	if ( ! isEqual( this.props.keyringConnections, nextProps.keyringConnections ) ) {
+	// 		this.setState( {
+	// 			isConnecting: false,
+	// 		} );
+	// 	}
 
-		if ( ! this.state.isAwaitingConnections ) {
-			return;
-		}
+	// 	if ( ! this.state.isAwaitingConnections ) {
+	// 		return;
+	// 	}
 
-		this.setState( {
-			isAwaitingConnections: false,
-			isRefreshing: false,
-		} );
+	// 	this.setState( {
+	// 		isAwaitingConnections: false,
+	// 		isRefreshing: false,
+	// 	} );
 
-		if ( this.didKeyringConnectionSucceed( nextProps.keyringConnections ) ) {
-			this.setState( { isConnecting: false } );
-			this.props.onConnect();
-		}
-	}
+	// 	if ( this.didKeyringConnectionSucceed( nextProps.keyringConnections ) ) {
+	// 		this.setState( { isConnecting: false } );
+	// 		this.props.onConnect();
+	// 	}
+	// }
 
 	/**
 	 * Returns whether the Keyring authorization attempt succeeded

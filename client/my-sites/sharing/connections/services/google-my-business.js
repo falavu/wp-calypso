@@ -41,7 +41,7 @@ export class GoogleMyBusiness extends SharingService {
 	// override `createOrUpdateConnection` to ignore connection update, this is only useful for publicize services
 	createOrUpdateConnection = ( keyringConnectionId, externalUserId ) => {
 		this.props
-			.connectGoogleMyBusinessLocation( this.props.siteId, keyringConnectionId, externalUserId )
+			.connectGoogleMyBusinessLocation( this.props.siteId, externalUserId )
 			.catch( () => {
 				this.props.failCreateConnection( {
 					message: this.props.translate( 'Error while linking your site to %(service)s.', {

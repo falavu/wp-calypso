@@ -39,11 +39,9 @@ class GoogleMyBusinessSelectLocationButton extends Component {
 			'calypso_google_my_business_select_location_connect_location_button_click'
 		);
 
-		this.props
-			.connectGoogleMyBusinessLocation( siteId, location.keyringConnectionId, location.ID )
-			.then( () => {
-				onSelected( location );
-			} );
+		this.props.connectGoogleMyBusinessLocation( siteId, location.ID ).then( () => {
+			onSelected( location );
+		} );
 	};
 
 	render() {
@@ -56,7 +54,7 @@ class GoogleMyBusinessSelectLocationButton extends Component {
 						className="gmb-select-location__connected-icon"
 						icon="checkmark-circle"
 						size={ 18 }
-					/>{ ' ' }
+					/>{' '}
 					{ translate( 'Connected' ) }
 				</div>
 			);
