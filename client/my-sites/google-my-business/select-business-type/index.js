@@ -9,7 +9,7 @@ import page from 'page';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Gridicon from 'gridicons';
-import { get, isInteger } from 'lodash';
+import { get } from 'lodash';
 
 /**
  * Internal dependencies
@@ -27,7 +27,6 @@ import KeyringConnectButton from 'blocks/keyring-connect-button';
 import Main from 'components/main';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
 import { canCurrentUser, getGoogleMyBusinessLocations } from 'state/selectors';
-import { associateGoogleMyBusinessAccount } from 'state/google-my-business/actions';
 import { isJetpackSite } from 'state/sites/selectors';
 import { recordTracksEvent } from 'state/analytics/actions';
 import QuerySiteSettings from 'components/data/query-site-settings';
@@ -35,8 +34,7 @@ import QueryKeyringConnections from 'components/data/query-keyring-connections';
 
 class GoogleMyBusinessSelectBusinessType extends Component {
 	static propTypes = {
-		allGoogleMyBusinessLocations: PropTypes.array.isRequired,
-		siteGoogleMyBusinessLocations: PropTypes.array.isRequired,
+		googleMyBusinessLocations: PropTypes.array.isRequired,
 		recordTracksEvent: PropTypes.func.isRequired,
 		siteId: PropTypes.number,
 		siteIsJetpack: PropTypes.bool.isRequired,
@@ -46,8 +44,8 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
-			previousLocations: nextProps.siteGoogleMyBusinessLocations,
-			locationsChanged: nextProps.siteGoogleMyBusinessLocations !== prevState.previousLocations,
+			previousLocations: nextProps.googleMyBusinessLocations,
+			locationsChanged: nextProps.googleMyBusinessLocations !== prevState.previousLocations,
 		};
 	}
 
@@ -59,32 +57,24 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 		page.back( `/stats/day/${ this.props.siteSlug }` );
 	};
 
-	handleConnect = newConnections => {
-		const { allGoogleMyBusinessLocations, siteId, siteSlug } = this.props;
+	handleConnect = () => {
+		const { googleMyBusinessLocations, siteSlug } = this.props;
 
-		if ( newConnections.length > 0 && isInteger( newConnections[ 0 ].ID ) ) {
-			this.props.associateGoogleMyBusinessAccount( siteId, newConnections[ 0 ].ID );
+		const locationCount = googleMyBusinessLocations.length;
+		const verifiedLocationCount = googleMyBusinessLocations.filter( location => {
+			return get( location, 'meta.state.isVerified', false );
+		} ).length;
 
-			const siteGoogleMyBusinessLocations = allGoogleMyBusinessLocations.filter(
-				location => location.keyringConnectionId === newConnections[ 0 ].ID
-			);
+		this.props.recordTracksEvent( 'calypso_google_my_business_select_business_type_connect', {
+			location_count: locationCount,
+			verified_location_count: verifiedLocationCount,
+		} );
 
-			const locationCount = siteGoogleMyBusinessLocations.length;
-			const verifiedLocationCount = siteGoogleMyBusinessLocations.filter( location => {
-				return get( location, 'meta.state.isVerified', false );
-			} ).length;
-
-			this.props.recordTracksEvent( 'calypso_google_my_business_select_business_type_connect', {
-				location_count: locationCount,
-				verified_location_count: verifiedLocationCount,
-			} );
-
-			if ( locationCount > 0 ) {
-				page.redirect( `/google-my-business/select-location/${ siteSlug }` );
-			}
+		if ( locationCount === 0 ) {
+			page.redirect( `/google-my-business/new/${ siteSlug }` );
+		} else {
+			page.redirect( `/google-my-business/select-location/${ siteSlug }` );
 		}
-
-		page.redirect( `/google-my-business/new/${ siteSlug }` );
 	};
 
 	trackCreateYourListingClick = () => {
@@ -106,13 +96,13 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 	};
 
 	renderLocalBusinessCard() {
-		const { canUserManageOptions, siteGoogleMyBusinessLocations, siteSlug, translate } = this.props;
+		const { canUserManageOptions, googleMyBusinessLocations, siteSlug, translate } = this.props;
 		const { locationsChanged } = this.state;
 
 		let connectButton;
 
 		if ( config.isEnabled( 'google-my-business' ) && canUserManageOptions ) {
-			if ( siteGoogleMyBusinessLocations.length > 0 && ! locationsChanged ) {
+			if ( googleMyBusinessLocations.length > 0 && ! locationsChanged ) {
 				connectButton = (
 					<Button
 						primary
@@ -261,9 +251,7 @@ export default connect(
 		const siteId = getSelectedSiteId( state );
 
 		return {
-			// we need all locations in the handleConnect function
-			allGoogleMyBusinessLocations: getGoogleMyBusinessLocations( state, siteId, false ),
-			siteGoogleMyBusinessLocations: getGoogleMyBusinessLocations( state, siteId ),
+			googleMyBusinessLocations: getGoogleMyBusinessLocations( state, siteId ),
 			canUserManageOptions: canCurrentUser( state, siteId, 'manage_options' ),
 			siteId,
 			siteIsJetpack: isJetpackSite( state, siteId ),
@@ -271,7 +259,6 @@ export default connect(
 		};
 	},
 	{
-		associateGoogleMyBusinessAccount,
 		recordTracksEvent,
 	}
 )( localize( GoogleMyBusinessSelectBusinessType ) );

@@ -18,26 +18,16 @@ function isConnected( externalUser, siteSettings ) {
 	);
 }
 
-export default function getGoogleMyBusinessLocations(
-	state,
-	siteId,
-	onlyAssociatedAccountLocations = true
-) {
+export default function getGoogleMyBusinessLocations( state, siteId ) {
 	const siteSettings = getSiteSettings( state, siteId );
 
 	if ( ! siteSettings ) {
 		return [];
 	}
 
-	const locationFilter = { isExternal: true };
-	if ( onlyAssociatedAccountLocations ) {
-		locationFilter.keyringConnectionId = siteSettings.google_my_business_keyring_id;
-	}
-
-	const externalUsers = filter(
-		getAvailableExternalAccounts( state, 'google_my_business' ),
-		locationFilter
-	);
+	const externalUsers = filter( getAvailableExternalAccounts( state, 'google_my_business' ), {
+		isExternal: true,
+	} );
 
 	externalUsers.forEach( externalUser => {
 		externalUser.isConnected = isConnected( externalUser, siteSettings );

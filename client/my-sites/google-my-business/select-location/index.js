@@ -5,7 +5,7 @@
  */
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { get, isInteger } from 'lodash';
+import { get } from 'lodash';
 import Gridicon from 'gridicons';
 import page from 'page';
 import PropTypes from 'prop-types';
@@ -27,10 +27,7 @@ import Main from 'components/main';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
 import { recordTracksEvent } from 'state/analytics/actions';
 import { getGoogleMyBusinessLocations } from 'state/selectors';
-import {
-	associateGoogleMyBusinessAccount,
-	connectGoogleMyBusinessLocation,
-} from 'state/google-my-business/actions';
+import { connectGoogleMyBusinessLocation } from 'state/google-my-business/actions';
 import QuerySiteSettings from 'components/data/query-site-settings';
 import QueryKeyringConnections from 'components/data/query-keyring-connections';
 import { requestKeyringConnections } from 'state/sharing/keyring/actions';
@@ -60,26 +57,18 @@ class GoogleMyBusinessSelectLocation extends Component {
 		);
 	};
 
-	handleConnect = newConnections => {
-		const { allGoogleMyBusinessLocations, siteId } = this.props;
+	handleConnect = () => {
+		const { locations } = this.props;
 
-		if ( newConnections.length > 0 && isInteger( newConnections[ 0 ].ID ) ) {
-			this.props.associateGoogleMyBusinessAccount( siteId, newConnections[ 0 ].ID );
+		const locationCount = locations.length;
+		const verifiedLocationCount = locations.filter( location => {
+			return get( location, 'meta.state.isVerified', false );
+		} ).length;
 
-			const siteGoogleMyBusinessLocations = allGoogleMyBusinessLocations.filter(
-				location => location.keyringConnectionId === newConnections[ 0 ].ID
-			);
-
-			const locationCount = siteGoogleMyBusinessLocations.length;
-			const verifiedLocationCount = siteGoogleMyBusinessLocations.filter( location => {
-				return get( location, 'meta.state.isVerified', false );
-			} ).length;
-
-			this.props.recordTracksEvent( 'calypso_google_my_business_select_business_type_connect', {
-				location_count: locationCount,
-				verified_location_count: verifiedLocationCount,
-			} );
-		}
+		this.props.recordTracksEvent( 'calypso_google_my_business_select_location_connect', {
+			location_count: locationCount,
+			verified_location_count: verifiedLocationCount,
+		} );
 	};
 
 	trackAddListingClick = () => {
@@ -93,7 +82,7 @@ class GoogleMyBusinessSelectLocation extends Component {
 	}
 
 	render() {
-		const { siteGoogleMyBusinessLocations, siteId, translate } = this.props;
+		const { locations, siteId, translate } = this.props;
 
 		return (
 			<Main className="gmb-select-location" wideLayout>
@@ -115,7 +104,7 @@ class GoogleMyBusinessSelectLocation extends Component {
 					{ translate( 'Select the listing you would like to connect to:' ) }
 				</CompactCard>
 
-				{ siteGoogleMyBusinessLocations.map( location => (
+				{ locations.map( location => (
 					<GoogleMyBusinessLocation key={ location.ID } location={ location } isCompact>
 						<GoogleMyBusinessSelectLocationButton
 							location={ location }
@@ -125,7 +114,9 @@ class GoogleMyBusinessSelectLocation extends Component {
 				) ) }
 
 				<Card className="gmb-select-location__help">
-					<p>{ translate( "Don't see the listing you are trying to connect?" ) }</p>
+					<p>
+						{ translate( "Don't see the listing you are trying to connect?" ) }
+					</p>
 
 					<div className="gmb-select-location__help-actions">
 						<Button
@@ -154,17 +145,15 @@ class GoogleMyBusinessSelectLocation extends Component {
 export default connect(
 	state => {
 		const siteId = getSelectedSiteId( state );
+		const locations = getGoogleMyBusinessLocations( state, siteId );
 
 		return {
-			// we need all locations in the handleConnect function
-			allGoogleMyBusinessLocations: getGoogleMyBusinessLocations( state, siteId, false ),
-			siteGoogleMyBusinessLocations: getGoogleMyBusinessLocations( state, siteId ),
+			locations,
 			siteId,
 			siteSlug: getSelectedSiteSlug( state ),
 		};
 	},
 	{
-		associateGoogleMyBusinessAccount,
 		connectGoogleMyBusinessLocation,
 		recordTracksEvent,
 		requestKeyringConnections,
