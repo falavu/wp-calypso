@@ -24,6 +24,7 @@ import KeyringConnectButton from 'blocks/keyring-connect-button';
 import { getSelectedSiteSlug, getSelectedSiteId } from 'state/ui/selectors';
 import { recordTracksEvent } from 'state/analytics/actions';
 import { getGoogleMyBusinessLocations } from 'state/selectors';
+import { dismissNudge } from 'blocks/google-my-business-stats-nudge/actions';
 
 class GoogleMyBusinessNewAccount extends Component {
 	static propTypes = {
@@ -59,8 +60,9 @@ class GoogleMyBusinessNewAccount extends Component {
 		page.redirect( `/google-my-business/${ this.props.siteSlug }` );
 	};
 
-	trackNoThanksClick = () => {
+	handleNoThanksClick = () => {
 		this.props.recordTracksEvent( 'calypso_google_my_business_new_account_no_thanks_button_click' );
+		this.props.dismissNudge();
 	};
 
 	render() {
@@ -114,7 +116,7 @@ class GoogleMyBusinessNewAccount extends Component {
 								{ translate( 'Use another Google Account' ) }
 							</KeyringConnectButton>
 
-							<Button href={ `/stats/${ siteSlug }` } onClick={ this.trackNoThanksClick }>
+							<Button href={ `/stats/${ siteSlug }` } onClick={ this.handleNoThanksClick }>
 								{ translate( 'No thanks' ) }
 							</Button>
 						</div>
@@ -131,6 +133,7 @@ export default connect(
 		locations: getGoogleMyBusinessLocations( state, getSelectedSiteId( state ) ),
 	} ),
 	{
+		dismissNudge,
 		recordTracksEvent,
 	}
 )( localize( GoogleMyBusinessNewAccount ) );
