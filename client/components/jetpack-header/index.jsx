@@ -22,7 +22,7 @@ export class JetpackHeader extends PureComponent {
 
 	static propTypes = {
 		partnerSlug: PropTypes.string,
-		width: PropTypes.number,
+		width: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	};
 
 	renderLogo() {

@@ -29,7 +29,7 @@ export class JetpackConnectMainWrapper extends PureComponent {
 	};
 
 	render() {
-		const { isWide, className, children } = this.props;
+		const { isWide, className, children, partnerSlug } = this.props;
 		const wrapperClassName = classNames( 'jetpack-connect__main', {
 			'is-wide': isWide,
 			'is-mobile-app-flow': !! retrieveMobileRedirect(),
@@ -38,7 +38,7 @@ export class JetpackConnectMainWrapper extends PureComponent {
 		return (
 			<Main className={ classNames( className, wrapperClassName ) }>
 				<div className="jetpack-connect__main-logo">
-					<JetpackHeader partnerSlug={ this.props.partnerSlug } />
+					<JetpackHeader width={ partnerSlug && '96%' } partnerSlug={ partnerSlug } />
 				</div>
 				{ children }
 			</Main>

@@ -143,6 +143,7 @@ class Login extends Component {
 			socialConnect,
 			translate,
 			twoStepNonce,
+			partnerSlug,
 		} = this.props;
 
 		let headerText = translate( 'Log in to your account.' );
@@ -194,7 +195,7 @@ class Login extends Component {
 			headerText = translate( 'Log in to your WordPress.com account to set up Jetpack.' );
 			preHeader = (
 				<div className="login__jetpack-logo">
-					<JetpackHeader partnerSlug={ this.props.partnerSlug } />
+					<JetpackHeader width={ partnerSlug && '96%' } partnerSlug={ partnerSlug } />
 				</div>
 			);
 		}
