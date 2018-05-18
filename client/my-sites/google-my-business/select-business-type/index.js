@@ -42,17 +42,6 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 		translate: PropTypes.func.isRequired,
 	};
 
-	static getDerivedStateFromProps( nextProps, prevState ) {
-		return {
-			previousLocations: nextProps.googleMyBusinessLocations,
-			locationsChanged: nextProps.googleMyBusinessLocations !== prevState.previousLocations,
-		};
-	}
-
-	state = {
-		previousLocations: [],
-	};
-
 	goBack = () => {
 		page.back( `/stats/day/${ this.props.siteSlug }` );
 	};
@@ -83,6 +72,12 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 		);
 	};
 
+	trackConnectToGoogleMyBusinessClick = () => {
+		this.props.recordTracksEvent(
+			'calypso_google_my_business_select_business_type_create_my_listing_button_click'
+		);
+	};
+
 	trackOptimizeYourSEOClick = () => {
 		this.props.recordTracksEvent(
 			'calypso_google_my_business_select_business_type_optimize_your_seo_button_click'
@@ -96,40 +91,24 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 	};
 
 	renderLocalBusinessCard() {
-		const { canUserManageOptions, googleMyBusinessLocations, siteSlug, translate } = this.props;
-		const { locationsChanged } = this.state;
+		const { canUserManageOptions, translate } = this.props;
 
 		let connectButton;
 
 		if ( config.isEnabled( 'google-my-business' ) && canUserManageOptions ) {
-			if ( googleMyBusinessLocations.length > 0 && ! locationsChanged ) {
-				connectButton = (
-					<Button
-						primary
-						href={ `/google-my-business/select-location/${ siteSlug }` }
-						onClick={ this.trackCreateYourListingClick }
-					>
-						{ translate( 'Select Google My Business Location', {
-							comment:
-								'Call to Action to choose from existing connected Google My Business business listings',
-						} ) }
-					</Button>
-				);
-			} else {
-				connectButton = (
-					<KeyringConnectButton
-						serviceId="google_my_business"
-						onClick={ this.trackCreateYourListingClick }
-						onConnect={ this.handleConnect }
-						primary
-					>
-						{ translate( 'Connect to Google My Business', {
-							comment:
-								'Call to Action to connect the site to a business listing in Google My Business',
-						} ) }
-					</KeyringConnectButton>
-				);
-			}
+			connectButton = (
+				<KeyringConnectButton
+					serviceId="google_my_business"
+					onClick={ this.trackConnectToGoogleMyBusinessClick }
+					onConnect={ this.handleConnect }
+					primary
+				>
+					{ translate( 'Connect to Google My Business', {
+						comment:
+							'Call to Action to connect the site to a business listing in Google My Business',
+					} ) }
+				</KeyringConnectButton>
+			);
 		} else {
 			connectButton = (
 				<Button
@@ -145,7 +124,6 @@ class GoogleMyBusinessSelectBusinessType extends Component {
 				</Button>
 			);
 		}
-
 		return (
 			<ActionCard
 				headerText={ translate( 'Physical Location or Service Area', {
